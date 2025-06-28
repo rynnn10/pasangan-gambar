@@ -189,11 +189,14 @@
         width: 100%;
       }
 
+      /* KETERANGAN: Penyesuaian untuk menampung Waktu, Poin, dan Level */
       .game-stats {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 15px;
         order: 2;
+        flex-grow: 1;
+        justify-content: center;
       }
 
       .sound-controls {
@@ -229,31 +232,22 @@
         width: 100%;
       }
 
-      .time-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        margin: 5px 0;
-      }
-
-      /* KETERANGAN: Ukuran font waktu dikecilkan */
+      /* KETERANGAN: Gaya untuk tampilan waktu yang baru */
       .time {
-        text-align: center;
-        font-family: "Times New Roman", Times, serif;
-        font-size: 4vh; /* Scaled down timer */
-        color: rgba(245, 245, 245, 0.847);
-        padding: 8px 16px;
-        background: rgba(0, 0, 0, 0.3);
-        border-radius: 10px;
-        border: 2px solid #f6fc3f;
+        font-size: 1.2rem; /* Ukuran disamakan dengan skor/level */
+        font-weight: bold;
+        color: #f6fc3f;
+        background: none;
+        border: none;
+        padding: 0;
+        order: -1; /* Memastikan waktu selalu di paling kiri */
       }
 
       .grid-container {
         padding: 5px;
         width: 100%;
         flex-grow: 1;
-        margin-top: -10px; /* Moved grid up */
+        margin-top: 5px;
       }
 
       .grid-cell {
@@ -407,7 +401,7 @@
         }
       }
 
-      /* --- Footer --- */
+      /* --- Footer & BG Button --- */
       footer {
         text-align: center;
         padding: 5px;
@@ -418,9 +412,13 @@
         bottom: 0;
       }
 
-      /* --- Background Selector --- */
+      /* KETERANGAN: Tombol ganti background tidak lagi memiliki posisi fixed */
+      #change-bg-btn i {
+        color: #a742f5; /* Warna ikon diubah agar serasi */
+      }
+
       #bg-selector-modal {
-        z-index: 101; /* Must be on top */
+        z-index: 101;
       }
 
       .bg-options {
@@ -432,7 +430,7 @@
 
       .bg-option {
         width: 100%;
-        padding-top: 100%; /* Creates a square aspect ratio */
+        padding-top: 100%;
         border: 2px solid white;
         border-radius: 8px;
         cursor: pointer;
@@ -446,25 +444,6 @@
       .bg-option.active {
         border-color: #f6fc3f;
         box-shadow: 0 0 10px #f6fc3f;
-      }
-
-      /* KETERANGAN: Posisi tombol dan footer dinaikkan */
-      #change-bg-btn {
-        position: absolute;
-        bottom: 45px;
-        right: 15px;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
-        border: 1px solid white;
-        color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 1.5rem;
-        cursor: pointer;
-        z-index: 99;
       }
 
       @media screen and (max-width: 420px) {
@@ -661,11 +640,17 @@
               class="slider"
             />
           </div>
+          <!-- KETERANGAN: Tampilan waktu, poin, dan level digabungkan di sini -->
           <div class="game-stats">
+            <div class="time">0:00</div>
             <div class="score-display" id="score-display">Poin: 0</div>
             <div id="level-display">Level 1</div>
           </div>
           <div class="game-buttons">
+            <!-- KETERANGAN: Tombol ganti background dipindahkan ke sini -->
+            <button id="change-bg-btn" class="btn" title="Ganti Background">
+              <i class="fas fa-image icon-btn"></i>
+            </button>
             <button id="help" class="btn" title="Bantuan (kurangi 2 poin)">
               <i class="fas fa-star help-icon icon-btn"></i>
             </button>
@@ -674,7 +659,7 @@
             </button>
           </div>
         </div>
-        <div class="time-container"><div class="time"></div></div>
+
         <div class="grid-container"></div>
       </div>
 
@@ -691,9 +676,6 @@
       <audio id="timeUpSound" src="spx/waktu habis.mp3"></audio>
       <audio id="tenSecondsSound" src="spx/waktu 10 detik.mp3" loop></audio>
 
-      <button id="change-bg-btn" title="Ganti Background">
-        <i class="fas fa-image"></i>
-      </button>
       <footer>Copyright by Riyan 2025</footer>
     </div>
 
