@@ -12,6 +12,8 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <!-- KETERANGAN: Menambahkan library html2canvas untuk fitur screenshot -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
       /* --- General Styles --- */
       * {
@@ -73,6 +75,10 @@
       }
       .btn-confirm-no {
         background: #f44336;
+      }
+      /* KETERANGAN: Style untuk tombol bagikan */
+      .btn-share {
+        background: #00bcd4;
       }
 
       a {
@@ -177,19 +183,17 @@
         width: 100%;
       }
 
-      /* --- UI Scaling Adjustments --- */
       .top-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 8px;
-        margin-top: 2%;
+        margin-top: 0;
         flex-wrap: wrap;
         gap: 8px;
         width: 100%;
       }
 
-      /* KETERANGAN: Penyesuaian untuk menampung Waktu, Poin, dan Level */
       .game-stats {
         display: flex;
         align-items: center;
@@ -228,26 +232,25 @@
         color: #f6fc3f;
         font-size: 18px;
         font-family: "Times New Roman", Times, serif;
-        margin-top: 5px;
+        margin-top: 2%;
         width: 100%;
       }
 
-      /* KETERANGAN: Gaya untuk tampilan waktu yang baru */
       .time {
-        font-size: 1.2rem; /* Ukuran disamakan dengan skor/level */
+        font-size: 1.2rem;
         font-weight: bold;
         color: #f6fc3f;
         background: none;
         border: none;
         padding: 0;
-        order: -1; /* Memastikan waktu selalu di paling kiri */
+        order: -1;
       }
 
       .grid-container {
         padding: 5px;
         width: 100%;
         flex-grow: 1;
-        margin-top: 5px;
+        margin-top: -5px;
       }
 
       .grid-cell {
@@ -412,9 +415,8 @@
         bottom: 0;
       }
 
-      /* KETERANGAN: Tombol ganti background tidak lagi memiliki posisi fixed */
       #change-bg-btn i {
-        color: #a742f5; /* Warna ikon diubah agar serasi */
+        color: #a742f5;
       }
 
       #bg-selector-modal {
@@ -577,6 +579,10 @@
             Anda telah menyelesaikan level ini dengan sukses!
           </p>
           <div class="modal-buttons">
+            <!-- KETERANGAN: Menambahkan tombol bagikan -->
+            <button id="share-level-btn" class="btn btn-share">
+              <i class="fas fa-share-alt"></i> Bagikan
+            </button>
             <button id="replay-level-btn" class="btn btn-confirm-no">
               <i class="fas fa-redo"></i> Main Lagi
             </button>
@@ -592,6 +598,10 @@
           <h2>Selamat!</h2>
           <p id="game-complete-text">Anda telah menyelesaikan semua level!</p>
           <div class="modal-buttons">
+            <!-- KETERANGAN: Menambahkan tombol bagikan -->
+            <button id="share-game-btn" class="btn btn-share">
+              <i class="fas fa-share-alt"></i> Bagikan
+            </button>
             <button id="play-again-btn" class="btn btn-confirm-yes">
               <i class="fas fa-redo"></i> Main Lagi
             </button>
@@ -604,6 +614,10 @@
           <h2>Waktu Habis!</h2>
           <p id="timeout-text">Jangan menyerah, coba lagi!</p>
           <div class="modal-buttons">
+            <!-- KETERANGAN: Menambahkan tombol bagikan -->
+            <button id="share-timeup-btn" class="btn btn-share">
+              <i class="fas fa-share-alt"></i> Bagikan
+            </button>
             <button id="play-again-timeup-btn" class="btn btn-confirm-yes">
               <i class="fas fa-redo"></i> Main Lagi
             </button>
@@ -619,6 +633,31 @@
             <!-- Opsi background akan ditambahkan di sini oleh JavaScript -->
           </div>
         </div>
+      </div>
+
+      <!-- KETERANGAN: Elemen ini digunakan untuk membuat gambar yang akan dibagikan -->
+      <div
+        id="screenshot-container"
+        style="
+          position: absolute;
+          left: -9999px;
+          top: 0;
+          background: #2c3e50;
+          color: white;
+          padding: 20px;
+          border-radius: 10px;
+          width: 350px;
+          text-align: center;
+        "
+      >
+        <h1
+          style="color: #f6fc3f; font-family: 'Times New Roman', Times, serif"
+        >
+          PAIR CUTE ANIMALS
+        </h1>
+        <h2 id="screenshot-title" style="color: #fc813f; margin-top: 10px"></h2>
+        <p id="screenshot-text" style="font-size: 1.2rem; margin-top: 15px"></p>
+        <p style="margin-top: 20px; font-size: 0.8rem">Mainkan di sini!</p>
       </div>
 
       <div class="container">
@@ -640,14 +679,12 @@
               class="slider"
             />
           </div>
-          <!-- KETERANGAN: Tampilan waktu, poin, dan level digabungkan di sini -->
           <div class="game-stats">
             <div class="time">0:00</div>
             <div class="score-display" id="score-display">Poin: 0</div>
             <div id="level-display">Level 1</div>
           </div>
           <div class="game-buttons">
-            <!-- KETERANGAN: Tombol ganti background dipindahkan ke sini -->
             <button id="change-bg-btn" class="btn" title="Ganti Background">
               <i class="fas fa-image icon-btn"></i>
             </button>
@@ -663,7 +700,6 @@
         <div class="grid-container"></div>
       </div>
 
-      <!-- Sound Effects -->
       <audio
         id="gameSound"
         src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
@@ -676,7 +712,7 @@
       <audio id="timeUpSound" src="spx/waktu habis.mp3"></audio>
       <audio id="tenSecondsSound" src="spx/waktu 10 detik.mp3" loop></audio>
 
-      <footer>Copyright by Riyan 2025</footer>
+      <footer>@Copyright by Riyan 2025</footer>
     </div>
 
     <script>
@@ -938,7 +974,6 @@
             timerInterval = setInterval(() => {
               if (!isPaused) {
                 data.time--;
-                // KETERANGAN: Waktu peringatan diubah menjadi 20 detik
                 if (data.time <= 20 && !countdownSoundPlayed) {
                   playSound("tenSecondsSound");
                   countdownSoundPlayed = true;
@@ -1275,6 +1310,9 @@
           nextLevelBtn: $("#next-level-btn")[0],
           playAgainBtn: $("#play-again-btn")[0],
           playAgainTimeUpBtn: $("#play-again-timeup-btn")[0],
+          shareLevelBtn: $("#share-level-btn")[0],
+          shareGameBtn: $("#share-game-btn")[0],
+          shareTimeUpBtn: $("#share-timeup-btn")[0],
           gridContainer: $(".grid-container")[0],
           helpBtn: $("#help")[0],
           pauseBtn: $("#pause")[0],
@@ -1296,7 +1334,6 @@
         function changeBackground(bgValue) {
           document.body.style.backgroundImage = `url('${bgValue}')`;
           localStorage.setItem("gameBackground", bgValue);
-          // Highlight the active background
           const allOptions = document.querySelectorAll(".bg-option");
           allOptions.forEach((opt) => {
             if (opt.style.backgroundImage.includes(bgValue)) {
@@ -1328,8 +1365,43 @@
           if (savedBg) {
             changeBackground(savedBg);
           } else {
-            // Set default and highlight it
             changeBackground(backgrounds[0]);
+          }
+        }
+
+        // KETERANGAN: Fungsi untuk menangani proses berbagi gambar
+        async function handleShare(title, text) {
+          const element = document.getElementById("screenshot-container");
+          document.getElementById("screenshot-title").innerText = title;
+          document.getElementById("screenshot-text").innerText = text;
+
+          try {
+            const canvas = await html2canvas(element, { useCORS: true });
+            canvas.toBlob(async (blob) => {
+              if (navigator.share) {
+                const file = new File([blob], "hasil-game.png", {
+                  type: "image/png",
+                });
+                await navigator
+                  .share({
+                    title: "Lihat Hasil Game Saya!",
+                    text: text,
+                    files: [file],
+                  })
+                  .catch((err) => {
+                    if (err.name !== "AbortError") throw err;
+                  });
+              } else {
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = "hasil-game.png";
+                link.click();
+                URL.revokeObjectURL(link.href);
+              }
+            }, "image/png");
+          } catch (err) {
+            console.error("Error sharing:", err);
+            alert("Gagal membagikan gambar.");
           }
         }
 
@@ -1387,6 +1459,26 @@
         on(ui.playAgainBtn, "click", () => {
           location.reload();
         });
+
+        // KETERANGAN: Event listener untuk tombol-tombol bagikan yang baru
+        on(ui.shareLevelBtn, "click", () =>
+          handleShare(
+            `Level ${currentLevel} Selesai!`,
+            `Aku berhasil menyelesaikan Level ${currentLevel} dengan Poin ${score}!`
+          )
+        );
+        on(ui.shareGameBtn, "click", () =>
+          handleShare(
+            "Game Selesai!",
+            `Aku berhasil menyelesaikan semua level dengan total Poin ${score}!`
+          )
+        );
+        on(ui.shareTimeUpBtn, "click", () =>
+          handleShare(
+            "Waktu Habis!",
+            `Permainanku berakhir dengan Poin ${score}. Ayo coba lagi!`
+          )
+        );
 
         function eventListeners(gameInstance) {
           var before = null;
