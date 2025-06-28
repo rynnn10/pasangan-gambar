@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Pair Cute Animal Pictures</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      /* --- General Styles --- */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        position: fixed;
+      }
+
+      body {
+        margin: 0 auto;
+        max-width: 100%;
+        width: 100%;
+        background: url("https://images.unsplash.com/photo-1518562180175-34a163b1a9a9?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80");
+        background-size: cover;
+        background-position: center;
+        color: white;
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        touch-action: manipulation;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        transition: background 0.5s ease;
+      }
+
+      .flex {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .btn {
+        padding: 10px 18px;
+        background: rgba(255, 255, 255, 0.3);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        user-select: none;
+      }
+      .btn:hover {
+        background: rgba(255, 255, 255, 0.5);
+      }
+      .btn-confirm-yes {
+        background: #4caf50;
+      }
+      .btn-confirm-no {
+        background: #f44336;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      /* --- Start Screen & Modals --- */
+      .overlay-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        z-index: 100;
+        padding: 20px;
+        overflow-y: auto;
+      }
+
+      #start-screen {
+        display: flex;
+      }
+
+      .start-screen-content,
+      .modal-content {
+        background: rgba(25, 25, 25, 0.8);
+        padding: 30px 40px;
+        border-radius: 15px;
+        text-align: center;
+        border: 1px solid #fc813f;
+        position: relative;
+        max-width: 90%;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .start-screen-content h1 {
+        color: #f6fc3f;
+        font-family: "Times New Roman", Times, serif;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+      }
+
+      .start-screen-content p {
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+      }
+
+      .start-buttons,
+      .modal-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+
+      .modal {
+        display: none;
+      }
+
+      .modal-content h2 {
+        color: #f6fc3f;
+        margin-bottom: 15px;
+      }
+      .modal-content p {
+        line-height: 1.6;
+        margin-bottom: 25px;
+        max-width: 300px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .modal-content .close-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 2rem;
+        color: white;
+        cursor: pointer;
+      }
+
+      #fact-text {
+        font-style: italic;
+        color: #f0f0f0;
+        min-height: 100px;
+        margin-bottom: 20px;
+      }
+
+      /* --- Game Container --- */
+      .container {
+        display: none;
+        flex-wrap: wrap;
+        margin: 0 auto;
+        background: rgba(0, 0, 0, 0.5);
+        height: 100%;
+        overflow-y: auto;
+        width: 100%;
+        max-width: 480px;
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .container > div {
+        width: 100%;
+      }
+
+      /* --- MODIFIED TOP BAR LAYOUT --- */
+      .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        margin-top: 5%;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .game-stats {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        order: 2;
+      }
+
+      .sound-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        order: 1;
+      }
+
+      .game-buttons {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        order: 3;
+      }
+
+      .sound-controls .btn {
+        padding: 0 8px;
+        height: 30px;
+      }
+
+      .game-buttons .btn {
+        background: transparent;
+        font-size: 25px;
+        border: none;
+        padding: 0;
+      }
+
+      #level-display {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #f6fc3f;
+      }
+
+      .score-display {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #f6fc3f;
+      }
+
+      .judul {
+        text-align: center;
+        color: #f6fc3f;
+        font-size: 20px;
+        font-family: "Times New Roman", Times, serif;
+        margin-top: -15px;
+        width: 100%;
+      }
+
+      .time-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        margin: 10px 0;
+      }
+
+      .time {
+        text-align: center;
+        font-family: "Times New Roman", Times, serif;
+        font-size: 5vh;
+        color: rgba(245, 245, 245, 0.847);
+        padding: 10px 20px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        border: 2px solid #f6fc3f;
+      }
+
+      .grid-container {
+        padding: 5px;
+        width: 100%;
+      }
+      .grid-cell {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto;
+      }
+
+      .grid-item {
+        position: relative;
+        float: left;
+        height: 100%;
+        border-radius: 5px;
+        margin: 2px;
+      }
+
+      .grid-item > div {
+        width: 100%;
+        height: 100%;
+      }
+
+      .grid-item.action .grid-item-content {
+        background: #fc813f;
+        transform: scale(1.1);
+      }
+
+      .grid-item.hidden .grid-item-content {
+        opacity: 0;
+        transform: scale(0);
+      }
+
+      .grid-item-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1px;
+        font-size: 12px;
+        transition: all 0.3s ease;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .grid-item-content img {
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+
+      .grid-item-direction {
+        position: absolute;
+        pointer-events: none;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+
+      .grid-item-direction > div {
+        position: absolute;
+        background: #fc813f;
+        opacity: 0;
+      }
+
+      .grid-item-direction.up > div.y,
+      .grid-item-direction.down > div.y {
+        margin: 0 auto;
+        left: 0;
+        right: 0;
+        width: 3px;
+        height: 50%;
+      }
+
+      .grid-item-direction.left > div.x,
+      .grid-item-direction.right > div.x {
+        margin: auto 0;
+        top: 0;
+        bottom: 0;
+        width: 50%;
+        height: 3px;
+      }
+
+      .grid-item-direction.up > div.up {
+        top: 0;
+        opacity: 1;
+        animation: height 0.2s ease;
+      }
+      .grid-item-direction.down > div.down {
+        bottom: 0;
+        opacity: 1;
+        animation: height 0.2s ease;
+      }
+      .grid-item-direction.left > div.left {
+        left: 0;
+        opacity: 1;
+        animation: width 0.2s ease;
+      }
+      .grid-item-direction.right > div.right {
+        right: 0;
+        opacity: 1;
+        animation: width 0.2s ease;
+      }
+
+      @keyframes height {
+        0% {
+          height: 0;
+        }
+        100% {
+          height: 50%;
+        }
+      }
+      @keyframes width {
+        0% {
+          width: 0;
+        }
+        100% {
+          width: 50%;
+        }
+      }
+
+      /* --- New Icon Styles --- */
+      .icon-btn {
+        font-size: 1.5rem;
+        color: white;
+        transition: all 0.3s ease;
+      }
+      .icon-btn:hover {
+        transform: scale(1.2);
+      }
+      .sound-icon {
+        color: #4caf50;
+      }
+      .pause-icon {
+        color: #ffc107;
+      }
+      .help-icon {
+        color: #9c27b0;
+      }
+
+      /* --- Background Selector Styles --- */
+      #bg-selector {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.9);
+        padding: 20px;
+        border-radius: 10px;
+        z-index: 1000;
+        width: 90%;
+        max-width: 400px;
+        display: none;
+        color: white;
+        text-align: center;
+      }
+
+      .bg-options {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin: 15px 0;
+      }
+
+      .bg-option {
+        width: 100%;
+        height: 80px;
+        border: 2px solid white;
+        border-radius: 8px;
+        cursor: pointer;
+        background-size: cover;
+        background-position: center;
+        transition: transform 0.2s;
+      }
+
+      .bg-option:hover {
+        transform: scale(1.05);
+      }
+
+      #change-bg-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.3);
+        border: 1px solid white;
+        border-radius: 50%;
+        color: white;
+        cursor: pointer;
+        z-index: 100;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #close-bg-selector {
+        margin-top: 15px;
+        padding: 8px 20px;
+        background: #fc813f;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+      }
+
+      /* --- Responsive --- */
+      @media screen and (max-width: 420px) {
+        .top-bar {
+          justify-content: center;
+        }
+        .game-stats {
+          order: 1;
+          flex-basis: 100%;
+          justify-content: center;
+        }
+        .sound-controls {
+          order: 2;
+        }
+        .game-buttons {
+          order: 3;
+        }
+        #volumeSlider {
+          width: 80px;
+        }
+        .start-screen-content,
+        .modal-content {
+          padding: 20px;
+        }
+        .start-screen-content h1 {
+          font-size: 2rem;
+        }
+        .start-screen-content p {
+          font-size: 1rem;
+        }
+        .bg-options {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media screen and (max-width: 400px) {
+        .grid-item-content img {
+          width: 38px;
+          height: 38px;
+        }
+      }
+      @media screen and (max-width: 325px) {
+        .grid-item-content img {
+          width: 32px;
+          height: 32px;
+        }
+        #volumeSlider {
+          width: 60px;
+        }
+        .btn {
+          padding: 8px 12px;
+          font-size: 1rem;
+        }
+      }
+
+      /* Loading spinner */
+      .loader {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #fc813f;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 10px auto;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Timeout modal */
+      #timeout-modal {
+        display: none;
+      }
+      #timeout-modal .modal-content {
+        background: rgba(150, 0, 0, 0.8);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="start-screen" class="overlay-screen">
+      <div class="start-screen-content">
+        <h1>PAIR CUTE</h1>
+        <p>ANIMAL PICTURES</p>
+        <div class="start-buttons">
+          <button id="start-btn" class="btn">Mulai</button>
+          <button id="info-btn" class="btn">Informasi</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="info-modal" class="modal overlay-screen">
+      <div class="modal-content">
+        <span class="close-btn" data-modal="info-modal">&times;</span>
+        <h2>Informasi Game</h2>
+        <p>
+          Hubungkan dua gambar hewan yang sama untuk menghilangkannya. Garis
+          penghubung tidak boleh berbelok lebih dari dua kali. Selesaikan semua
+          pasangan sebelum waktu habis!
+        </p>
+        <p>
+          Gunakan tombol bintang (<i class="fas fa-star help-icon"></i>) untuk
+          bantuan otomatis (akan mengurangi 2 poin).
+        </p>
+      </div>
+    </div>
+
+    <div id="pause-modal" class="modal overlay-screen">
+      <div class="modal-content">
+        <span class="close-btn" data-modal="pause-modal">&times;</span>
+        <h2 id="pause-title">Game Dijeda</h2>
+        <div id="fact-text">
+          <div class="loader"></div>
+          <p>Memuat fakta unik...</p>
+        </div>
+        <div class="modal-buttons">
+          <button id="resume-game-btn" class="btn btn-confirm-yes">
+            <i class="fas fa-play"></i> Lanjutkan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="confirm-help-modal" class="modal overlay-screen">
+      <div class="modal-content">
+        <h2>Gunakan Bantuan?</h2>
+        <p>
+          Apakah Anda yakin ingin menggunakan bantuan? Poin Anda akan berkurang
+          2.
+        </p>
+        <div class="modal-buttons">
+          <button id="confirm-help-yes" class="btn btn-confirm-yes">
+            Ya, Bantu
+          </button>
+          <button id="confirm-help-no" class="btn btn-confirm-no">Batal</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="no-points-modal" class="modal overlay-screen">
+      <div class="modal-content">
+        <h2>Poin Tidak Cukup</h2>
+        <p>
+          Poin Anda tidak cukup untuk menggunakan bantuan. Anda membutuhkan
+          minimal 2 poin.
+        </p>
+        <div class="modal-buttons">
+          <button id="close-no-points" class="btn btn-confirm-yes">
+            Mengerti
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="level-complete-modal" class="modal overlay-screen">
+      <div class="modal-content">
+        <h2>Level Selesai!</h2>
+        <p id="level-complete-text">
+          Anda telah menyelesaikan level ini dengan sukses!
+        </p>
+        <div class="modal-buttons">
+          <button id="replay-level-btn" class="btn btn-confirm-no">
+            <i class="fas fa-redo"></i> Main Lagi
+          </button>
+          <button id="next-level-btn" class="btn btn-confirm-yes">
+            <i class="fas fa-arrow-right"></i> Lanjutkan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="game-complete-modal" class="modal overlay-screen">
+      <div class="modal-content">
+        <h2>Selamat!</h2>
+        <p id="game-complete-text">Anda telah menyelesaikan semua level!</p>
+        <div class="modal-buttons">
+          <button id="play-again-btn" class="btn btn-confirm-yes">
+            <i class="fas fa-redo"></i> Main Lagi
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="timeout-modal" class="modal overlay-screen">
+      <div class="modal-content">
+        <h2>Waktu Habis!</h2>
+        <p id="timeout-text">
+          Yahh gagal! Waktu habis. Total poin Anda: 0. Coba lagi?
+        </p>
+        <div class="modal-buttons">
+          <button id="restart-timeout-btn" class="btn btn-confirm-yes">
+            <i class="fas fa-redo"></i> Main Lagi
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Background Changer Button and Modal -->
+    <button id="change-bg-btn" title="Ganti Background">
+      <i class="fas fa-image"></i>
+    </button>
+
+    <div id="bg-selector">
+      <h3>Pilih Background</h3>
+      <div class="bg-options">
+        <div
+          class="bg-option"
+          data-bg="url('https://images.unsplash.com/photo-1518562180175-34a163b1a9a9?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80')"
+          style="
+            background-image: url('https://images.unsplash.com/photo-1518562180175-34a163b1a9a9?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80');
+          "
+        ></div>
+
+        <div
+          class="bg-option"
+          data-bg="url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80')"
+          style="
+            background-image: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80');
+          "
+        ></div>
+
+        <div
+          class="bg-option"
+          data-bg="url('https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80')"
+          style="
+            background-image: url('https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80');
+          "
+        ></div>
+
+        <div
+          class="bg-option"
+          data-bg="url('https://images.unsplash.com/photo-1505118380757-91f5f5632de0?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80')"
+          style="
+            background-image: url('https://images.unsplash.com/photo-1505118380757-91f5f5632de0?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80');
+          "
+        ></div>
+
+        <div
+          class="bg-option"
+          data-bg="url('https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80')"
+          style="
+            background-image: url('https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80');
+          "
+        ></div>
+
+        <div
+          class="bg-option"
+          data-bg="url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80')"
+          style="
+            background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80');
+          "
+        ></div>
+
+        <div
+          class="bg-option"
+          data-bg="#4a8fe7"
+          style="background-color: #4a8fe7"
+        ></div>
+
+        <div
+          class="bg-option"
+          data-bg="#2c3e50"
+          style="background-color: #2c3e50"
+        ></div>
+
+        <div
+          class="bg-option"
+          data-bg="linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)"
+          style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)"
+        ></div>
+      </div>
+      <button id="close-bg-selector">Tutup</button>
+    </div>
+
+    <div class="container">
+      <div class="top-bar">
+        <div class="judul">
+          <h1 id="theme-title">HEWAN DARAT</h1>
+        </div>
+        <div class="sound-controls">
+          <button id="toggleSound" class="btn">
+            <i class="fas fa-volume-up sound-icon icon-btn"></i>
+          </button>
+          <input
+            id="volumeSlider"
+            type="range"
+            min="0"
+            max="1"
+            step="0.1"
+            value="0.5"
+            class="slider"
+          />
+          <audio
+            id="bgMusic"
+            src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+            loop
+          ></audio>
+          <audio id="winLevelSound" src="sfx/winlevel1.mp3"></audio>
+          <audio id="winGameSound" src="sfx/winsound.mp3"></audio>
+          <audio id="correctSound" src="sfx/benar.mp3"></audio>
+          <audio id="wrongSound" src="sfx/salah.mp3"></audio>
+          <audio id="timeoutSound" src="sfx/waktu habis.mp3"></audio>
+          <audio id="countdownSound" src="sfx/waktu 10 detik.mp3" loop></audio>
+        </div>
+        <div class="game-stats">
+          <div class="score-display" id="score-display">Poin: 0</div>
+          <div id="level-display">Level 1</div>
+        </div>
+        <div class="game-buttons">
+          <button id="help" class="btn" title="Bantuan (kurangi 2 poin)">
+            <i class="fas fa-star help-icon icon-btn"></i>
+          </button>
+          <button id="pause" class="btn" title="Jeda">
+            <i class="fas fa-pause pause-icon icon-btn"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="time-container">
+        <div class="time"></div>
+      </div>
+
+      <div class="grid-container"></div>
+    </div>
+
+    <script>
+      // --- Global State & Level Configurations ---
+      var currentLevel = 1;
+      var totalLevels = 3;
+      var isPaused = false;
+      var score = 0;
+      var helpUsed = false;
+      var timerInterval;
+      var countdownSoundPlayed = false;
+
+      const levelConfigs = {
+        1: {
+          row: 8,
+          col: 7,
+          objectCount: 14,
+          time: 180,
+          theme: "Hewan Darat",
+          imgPrefix: "hewan_darat/",
+        },
+        2: {
+          row: 8,
+          col: 8,
+          objectCount: 16,
+          time: 150,
+          theme: "Hewan Laut",
+          imgPrefix: "hewan_laut/",
+        },
+        3: {
+          row: 9,
+          col: 8,
+          objectCount: 18,
+          time: 120,
+          theme: "Hewan Udara",
+          imgPrefix: "hewan_udara/",
+        },
+      };
+
+      const defaultFacts = {
+        "Hewan Darat": "Kulit harimau juga bergaris, sama seperti bulunya.",
+        "Hewan Laut": "Gurita memiliki tiga jantung.",
+        "Hewan Udara": "Burung kolibri bisa terbang mundur.",
+      };
+
+      // --- config.js ---
+      var config = (function () {
+        var itemDirectionHTML = ` <div class="grid-item-direction">
+                                    <div class="y up"></div> <div class="y down"></div>
+                                    <div class="x left"></div> <div class="x right"></div>
+                                  </div>`;
+
+        var baseConfig = {
+          imgUrl: "./img/",
+          imgExtension: ".png",
+          imgByName: function (name) {
+            var src =
+              this.imgUrl + this.levelImgPrefix + name + this.imgExtension;
+            return `<img draggable="false" src="${src}"></img>`;
+          },
+          itemDirectionHTML: itemDirectionHTML,
+        };
+
+        function loadLevelConfig(level) {
+          const levelData = levelConfigs[level];
+          this.row = levelData.row;
+          this.col = levelData.col;
+          this.objectCount = levelData.objectCount;
+          this.repeatCount =
+            (levelData.row * levelData.col) / levelData.objectCount;
+          this.time = levelData.time;
+          this.theme = levelData.theme;
+          this.levelImgPrefix = levelData.imgPrefix;
+        }
+
+        baseConfig.loadLevelConfig = loadLevelConfig;
+        return baseConfig;
+      })();
+
+      // --- util.js ---
+      var log = console.log.bind(console);
+      var $ = (elem) => document.querySelectorAll(elem);
+      var random = function (start, end) {
+        start = start === void 0 ? 0 : start;
+        end = end === void 0 ? 1 : end;
+        return Math.floor(Math.random() * (end - start + 1)) + start;
+      };
+      var on = function (elem, type, callback, status) {
+        elem.addEventListener(type, (e) => {
+          callback(e);
+          if (status) return false;
+        });
+      };
+      var reduceDimension = (arr) => Array.prototype.concat.apply([], arr);
+
+      // --- view.js ---
+      var View = (function () {
+        var gridContainer = $(".grid-container")[0];
+        var timeDom = $(".time")[0];
+        var levelDisplay = $("#level-display")[0];
+        var themeTitle = $("#theme-title")[0];
+        var scoreDisplay = $("#score-display")[0];
+        var game = null;
+        var View = function () {};
+
+        View.prototype = {
+          init: function (g, data) {
+            game = g;
+            this.updateTime(data.time);
+            this.updateLevelDisplay();
+            this.updateScore();
+            this.initGrid(data.cell);
+          },
+          updateTime: function (time) {
+            var minutes = Math.floor(time / 60);
+            var seconds = time % 60;
+            timeDom.innerHTML = `${minutes}:${
+              seconds < 10 ? "0" : ""
+            }${seconds}`;
+
+            // Play countdown sound when time is <= 10 seconds
+            if (time <= 10 && !countdownSoundPlayed && !isPaused) {
+              $("#countdownSound")[0]
+                .play()
+                .catch((e) => console.log("Countdown sound play failed:", e));
+              countdownSoundPlayed = true;
+            } else if (time > 10) {
+              $("#countdownSound")[0].pause();
+              $("#countdownSound")[0].currentTime = 0;
+              countdownSoundPlayed = false;
+            }
+          },
+          updateLevelDisplay: function () {
+            levelDisplay.innerText = `Level ${currentLevel}`;
+            themeTitle.innerText = config.theme.toUpperCase();
+          },
+          updateScore: function () {
+            scoreDisplay.innerText = `Poin: ${score}`;
+          },
+          itemHTML: function (el) {
+            var empty = el.val === null;
+            var img = config.imgByName(empty ? 0 : el.val);
+            return `<div class="grid-item ${empty ? "hidden" : ""}" data-val="${
+              el.val
+            }" data-index="${el.index}">
+                                  <div class="grid-item-content">${img}</div>
+                                  ${config.itemDirectionHTML}
+                                </div>`;
+          },
+          initGrid: function (cell) {
+            var html = "";
+            cell.forEach((arr) => {
+              html += "<div class='grid-cell'>";
+              arr.forEach((el) => {
+                html += this.itemHTML(el);
+              });
+              html += "</div>";
+            });
+            gridContainer.innerHTML = html;
+          },
+          itemAction: (item) => item.classList.add("action"),
+          itemCancelAction: (item) => item.classList.remove("action"),
+          removeItem: function (index) {
+            var item = $(`.grid-item[data-index="${index}"]`)[0];
+            item.classList.add("hidden");
+          },
+          getRelationship: function (prev, next, current) {
+            var dir = [];
+            var max = [prev > current, next > current];
+            var arr = [prev, next];
+            arr.forEach(function (el, index) {
+              if (game.identicalY(el, current))
+                dir[index] = max[index] ? "right" : "left";
+              else if (game.identicalX(el, current))
+                dir[index] = max[index] ? "down" : "up";
+            });
+            return dir;
+          },
+          showLine: function (pos, callback) {
+            var _this = this;
+            pos.forEach(function (el, index) {
+              if (index === 0 || index === pos.length - 1) return;
+              var item = $(
+                `.grid-item[data-index="${el}"] .grid-item-direction`
+              )[0];
+              var prev = pos[index - 1];
+              var next = pos[index + 1];
+              var dir = _this.getRelationship(prev, next, el);
+              item.classList.add(dir[0], dir[1]);
+            });
+            setTimeout(() => {
+              _this.clearLine();
+              callback();
+            }, 300);
+          },
+          clearLine: function () {
+            $(".grid-item-direction").forEach((el) => {
+              el.className = "grid-item-direction";
+            });
+          },
+        };
+        return View;
+      })();
+
+      // --- game.js ---
+      var Game = (function () {
+        var ROW, COL, itemCount;
+        var data = { time: 0, cell: [] };
+        var hlepData = [];
+
+        var Game = function () {};
+
+        Game.prototype = {
+          setup: function (level) {
+            currentLevel = level;
+            config.loadLevelConfig(currentLevel);
+            ROW = config.row + 2;
+            COL = config.col + 2;
+            itemCount = config.row * config.col;
+            data.time = config.time;
+
+            // Reset countdown sound flag
+            countdownSoundPlayed = false;
+            $("#countdownSound")[0].pause();
+            $("#countdownSound")[0].currentTime = 0;
+
+            this.view = new View();
+            this.init();
+          },
+          init: function () {
+            this.start();
+            this.view.init(this, data);
+            this.startTimer();
+          },
+          start: function () {
+            this.initCell();
+            this.fillCell();
+            this.checkDeadlock();
+          },
+          restart: function () {
+            clearInterval(timerInterval);
+            score = 0;
+            this.setup(1);
+          },
+          restartCurrentLevel: function () {
+            clearInterval(timerInterval);
+            this.setup(currentLevel);
+          },
+          help: function () {
+            if (isPaused) return;
+            if (score >= 2) {
+              $("#confirm-help-modal")[0].style.display = "flex";
+            } else {
+              $("#no-points-modal")[0].style.display = "flex";
+            }
+          },
+
+          executeHelp: function () {
+            helpUsed = true;
+            score -= 2;
+            this.view.updateScore();
+
+            const cells = reduceDimension(data.cell).filter(
+              (el) => el.val !== null
+            );
+
+            const groups = {};
+            cells.forEach((cell) => {
+              if (!groups[cell.val]) {
+                groups[cell.val] = [];
+              }
+              groups[cell.val].push(cell.index);
+            });
+
+            for (const val in groups) {
+              const indices = groups[val];
+              if (indices.length < 2) continue;
+
+              for (let i = 0; i < indices.length; i++) {
+                for (let j = i + 1; j < indices.length; j++) {
+                  const status = this.isConnectable(indices[i], indices[j]);
+                  if (status.success) {
+                    this.judge(indices[i], indices[j]);
+                    return;
+                  }
+                }
+              }
+            }
+
+            score += 2;
+            this.view.updateScore();
+            alert("Tidak ada pasangan yang bisa dihubungkan saat ini!");
+          },
+
+          startTimer: function () {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+              if (!isPaused) {
+                data.time--;
+                this.view.updateTime(data.time);
+                if (data.time <= 0) {
+                  this.over();
+                }
+              }
+            }, 1000);
+          },
+          initCell: function () {
+            var index = -1;
+            data.cell = [];
+            for (var i = 0; i < ROW; i++) {
+              data.cell[i] = [];
+              for (var j = 0; j < COL; j++) {
+                index++;
+                data.cell[i][j] = { val: null, index: index };
+              }
+            }
+          },
+          fillCell: function () {
+            var count = config.objectCount;
+            var repeat = config.repeatCount;
+            for (var i = 1; i <= count; i++) {
+              for (var j = 0; j < repeat; j++) {
+                while (true) {
+                  var x = random(1, config.col);
+                  var y = random(1, config.row);
+                  if (data.cell[y][x].val === null) {
+                    data.cell[y][x].val = i;
+                    break;
+                  }
+                }
+              }
+            }
+          },
+          indexToPos: (index) => ({
+            x: index % COL,
+            y: Math.floor(index / COL),
+          }),
+          posToIndex: (obj) => obj.y * COL + obj.x,
+          removeItem: function (before, after) {
+            this.getItem(before).val = null;
+            this.getItem(after).val = null;
+            this.view.removeItem(before);
+            this.view.removeItem(after);
+            itemCount -= 2;
+            if (!helpUsed) {
+              score += 5;
+              this.view.updateScore();
+              $("#correctSound")[0]
+                .play()
+                .catch((e) => console.log("Correct sound play failed:", e));
+            }
+            helpUsed = false;
+            this.checkWinning();
+          },
+          isEmpty: (obj) => obj.val === null,
+          isSame: function (b, a) {
+            return this.getItem(b).val === this.getItem(a).val;
+          },
+          identicalX: function (b, a) {
+            return this.indexToPos(b).x === this.indexToPos(a).x;
+          },
+          identicalY: function (b, a) {
+            return this.indexToPos(b).y === this.indexToPos(a).y;
+          },
+          getAround: () => [-COL, COL, -1, 1],
+          getCorner: function (before, after) {
+            var min = this.indexToPos(Math.min(before, after));
+            var max = this.indexToPos(Math.max(before, after));
+            return [
+              this.posToIndex({ x: max.x, y: min.y }),
+              this.posToIndex({ x: min.x, y: max.y }),
+            ];
+          },
+          connectable: function (before, after) {
+            var _this = this,
+              pos = [],
+              success = false,
+              min = Math.min(before, after),
+              max = Math.max(before, after);
+            var called = function (dir) {
+              var i = min,
+                num = dir === "x" ? COL : 1;
+              while ((i += num) < max) {
+                var current = _this.getItem(i);
+                if (_this.isEmpty(current)) pos.push(current.index);
+                else {
+                  pos = [];
+                  return;
+                }
+              }
+              if (_this.getItem(i) === _this.getItem(max)) success = true;
+            };
+            if (this.identicalY(before, after)) called("y");
+            else if (this.identicalX(before, after)) called("x");
+            if (success && min !== before) pos = pos.reverse();
+            return { success: success, pos: pos };
+          },
+          directlyConnectable: function (b, a) {
+            return this.connectable(b, a);
+          },
+          onceCorner: function (before, after) {
+            var _this = this,
+              success = false,
+              pos = [],
+              corners = this.getCorner(before, after);
+            corners.forEach(function (el) {
+              if (!_this.isEmpty(_this.getItem(el)) || success) return;
+              var s = [
+                _this.connectable(before, el),
+                _this.connectable(el, after),
+              ];
+              if (s.every((st) => st.success)) {
+                s[0].pos.push(el);
+                success = true;
+                pos = s[0].pos.concat(s[1].pos);
+              }
+            });
+            return { success: success, pos: pos };
+          },
+          twiceCorner: function (before, after) {
+            var success = false,
+              pos = [],
+              arounds = this.getAround();
+            call: for (var i = 0; i < arounds.length; i++) {
+              var j = before;
+              while ((j = this.getNext(j, arounds[i])) !== -1) {
+                if (!this.isEmpty(this.getItem(j))) break;
+                var _status = this.onceCorner(j, after);
+                if (_status.success) {
+                  success = true;
+                  var _pos = this.connectable(before, j).pos;
+                  _pos.push(j);
+                  pos = _pos.concat(_status.pos);
+                  break call;
+                }
+              }
+            }
+            return { success: success, pos: pos };
+          },
+          getNext: function (index, direction) {
+            var pos = this.indexToPos(index);
+            if (
+              (direction === -1 && pos.x === 0) ||
+              (direction === 1 && pos.x === COL - 1)
+            )
+              return -1;
+            var nextIndex = index + direction;
+            if (this.isOutside(nextIndex)) return -1;
+            return nextIndex;
+          },
+          isConnectable: function (before, after) {
+            if (isPaused) return false;
+            var status = {};
+            if (before === after || !this.isSame(before, after)) return false;
+            var calleds = [
+              this.directlyConnectable,
+              this.onceCorner,
+              this.twiceCorner,
+            ];
+            for (var i = 0; i < calleds.length; i++) {
+              status = calleds[i].bind(this)(before, after);
+              if (status.success) break;
+            }
+            return status;
+          },
+          judge: function (before, after) {
+            var _this = this;
+            var status = this.isConnectable(before, after);
+            if (status && status.success) {
+              status.pos.unshift(before);
+              status.pos.push(after);
+              this.view.showLine(status.pos, () =>
+                _this.removeItem(before, after)
+              );
+              return true;
+            } else {
+              $("#wrongSound")[0]
+                .play()
+                .catch((e) => console.log("Wrong sound play failed:", e));
+            }
+            return false;
+          },
+          isOutside: function (index) {
+            var pos = this.indexToPos(index);
+            return pos.x < 0 || pos.y < 0 || pos.x > COL - 1 || pos.y > ROW - 1;
+          },
+          getItem: function (index) {
+            if (this.isOutside(index)) return {};
+            var pos = this.indexToPos(index);
+            return data.cell[pos.y][pos.x];
+          },
+          winning: function () {
+            clearInterval(timerInterval);
+            $("#countdownSound")[0].pause();
+            $("#countdownSound")[0].currentTime = 0;
+
+            if (currentLevel < totalLevels) {
+              $("#winLevelSound")[0]
+                .play()
+                .catch((e) => console.log("Win level sound play failed:", e));
+              $("#level-complete-modal")[0].style.display = "flex";
+            } else {
+              $("#winGameSound")[0]
+                .play()
+                .catch((e) => console.log("Win game sound play failed:", e));
+              $("#game-complete-modal")[0].style.display = "flex";
+            }
+          },
+          over: function () {
+            clearInterval(timerInterval);
+            $("#countdownSound")[0].pause();
+            $("#countdownSound")[0].currentTime = 0;
+            $("#timeoutSound")[0]
+              .play()
+              .catch((e) => console.log("Timeout sound play failed:", e));
+
+            $(
+              "#timeout-text"
+            )[0].innerText = `Yahh gagal! Waktu habis. Total poin Anda: ${score}. Coba lagi?`;
+            $("#timeout-modal")[0].style.display = "flex";
+          },
+          checkWinning: function () {
+            if (itemCount === 0) this.winning();
+            else this.checkDeadlock();
+          },
+          checkDeadlock: function () {
+            hlepData = [];
+            var cell = reduceDimension(data.cell);
+            var filter = (i) => cell.filter((el) => el.val === i);
+            for (var i = 1; i <= config.objectCount; i++) {
+              var result = filter(i);
+              for (var j = 0; j < result.length; j++) {
+                for (var k = j + 1; k < result.length; k++) {
+                  if (this.isConnectable(result[j].index, result[k].index)) {
+                    hlepData = [result[j].index, result[k].index];
+                    return;
+                  }
+                }
+              }
+            }
+            this.randomReset();
+          },
+          randomReset: function () {
+            alert(
+              "Tidak ada lagi langkah yang memungkinkan. Papan permainan akan diacak ulang!"
+            );
+            var _this = this;
+            var remaining = reduceDimension(data.cell).filter(
+              (el) => el.val !== null
+            );
+            this.initCell();
+            remaining.forEach(function (el) {
+              while (true) {
+                var x = random(1, config.col);
+                var y = random(1, config.row);
+                if (data.cell[y][x].val === null) {
+                  data.cell[y][x] = {
+                    val: el.val,
+                    index: _this.posToIndex({ x: x, y: y }),
+                  };
+                  break;
+                }
+              }
+            });
+            this.view.init(this, data);
+            this.checkDeadlock();
+          },
+          getAnimalFact: async function (theme) {
+            const factTextElement = $("#fact-text")[0];
+            factTextElement.innerHTML = `<div class="loader"></div><p>Memuat fakta unik...</p>`;
+            try {
+              let chatHistory = [
+                {
+                  role: "user",
+                  parts: [
+                    {
+                      text: `Beri aku satu fakta unik dan singkat tentang dunia ${theme} dalam bahasa Indonesia.`,
+                    },
+                  ],
+                },
+              ];
+              const payload = { contents: chatHistory };
+
+              const apiKey = "AIzaSyDrVTUfdsdlQ5YnVcAzRYhQa-yj2WyBEp4";
+              const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+              const response = await fetch(apiUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+              });
+
+              if (!response.ok) {
+                throw new Error("API request failed");
+              }
+              const result = await response.json();
+              const text = result.candidates[0].content.parts[0].text;
+              factTextElement.innerHTML = `<p>${text}</p>`;
+            } catch (error) {
+              console.error(
+                "Could not fetch fact from API, using fallback.",
+                error
+              );
+              factTextElement.innerHTML = `<p>${
+                defaultFacts[theme] ||
+                "Setiap hewan itu unik dengan caranya sendiri."
+              }</p>`;
+            }
+          },
+        };
+        return Game;
+      })();
+
+      // --- event.js and main.js ---
+      window.addEventListener("load", function () {
+        const game = new Game();
+
+        const ui = {
+          startScreen: $("#start-screen")[0],
+          gameContainer: $(".container")[0],
+          startBtn: $("#start-btn")[0],
+          infoBtn: $("#info-btn")[0],
+          infoModal: $("#info-modal")[0],
+          pauseModal: $("#pause-modal")[0],
+          confirmHelpModal: $("#confirm-help-modal")[0],
+          noPointsModal: $("#no-points-modal")[0],
+          levelCompleteModal: $("#level-complete-modal")[0],
+          gameCompleteModal: $("#game-complete-modal")[0],
+          timeoutModal: $("#timeout-modal")[0],
+          bgSelector: $("#bg-selector")[0],
+          changeBgBtn: $("#change-bg-btn")[0],
+          closeBgSelector: $("#close-bg-selector")[0],
+          bgOptions: $(".bg-option"),
+          closeBtns: $(".close-btn"),
+          confirmHelpYesBtn: $("#confirm-help-yes")[0],
+          confirmHelpNoBtn: $("#confirm-help-no")[0],
+          closeNoPointsBtn: $("#close-no-points")[0],
+          resumeGameBtn: $("#resume-game-btn")[0],
+          replayLevelBtn: $("#replay-level-btn")[0],
+          nextLevelBtn: $("#next-level-btn")[0],
+          playAgainBtn: $("#play-again-btn")[0],
+          restartTimeoutBtn: $("#restart-timeout-btn")[0],
+          gridContainer: $(".grid-container")[0],
+          helpBtn: $("#help")[0],
+          pauseBtn: $("#pause")[0],
+          bgMusic: $("#bgMusic")[0],
+          toggleSoundBtn: $("#toggleSound")[0],
+          volumeSlider: $("#volumeSlider")[0],
+        };
+
+        // Fungsi untuk mengubah background
+        function changeBackground(bgValue) {
+          document.body.style.background = bgValue;
+          document.body.style.backgroundSize = "cover";
+          document.body.style.backgroundPosition = "center";
+          localStorage.setItem("gameBackground", bgValue);
+        }
+
+        // Event listeners untuk background changer
+        on(ui.changeBgBtn, "click", () => {
+          ui.bgSelector.style.display = "block";
+        });
+
+        on(ui.closeBgSelector, "click", () => {
+          ui.bgSelector.style.display = "none";
+        });
+
+        ui.bgOptions.forEach((option) => {
+          on(option, "click", (e) => {
+            const bg = e.target.getAttribute("data-bg");
+            changeBackground(bg);
+          });
+        });
+
+        // Load background yang disimpan
+        window.addEventListener("load", () => {
+          const savedBg = localStorage.getItem("gameBackground");
+          if (savedBg) {
+            changeBackground(savedBg);
+          }
+        });
+
+        on(ui.startBtn, "click", function () {
+          ui.startScreen.style.display = "none";
+          ui.gameContainer.style.display = "flex";
+          ui.bgMusic.volume = 0.5;
+          ui.bgMusic.play().catch((e) => console.log("Audio play failed:", e));
+          game.setup(1);
+          eventListeners(game);
+        });
+
+        on(ui.infoBtn, "click", () => {
+          ui.infoModal.style.display = "flex";
+        });
+
+        ui.closeBtns.forEach((btn) => {
+          on(btn, "click", (e) => {
+            const modalId = e.target.getAttribute("data-modal");
+            $(`#${modalId}`)[0].style.display = "none";
+            if (modalId === "pause-modal" && isPaused) {
+              togglePause(game);
+            }
+          });
+        });
+
+        on(ui.confirmHelpYesBtn, "click", () => {
+          ui.confirmHelpModal.style.display = "none";
+          game.executeHelp();
+        });
+
+        on(ui.confirmHelpNoBtn, "click", () => {
+          ui.confirmHelpModal.style.display = "none";
+        });
+
+        on(ui.closeNoPointsBtn, "click", () => {
+          ui.noPointsModal.style.display = "none";
+        });
+
+        on(ui.resumeGameBtn, "click", () => togglePause(game));
+
+        on(ui.replayLevelBtn, "click", () => {
+          ui.levelCompleteModal.style.display = "none";
+          game.restartCurrentLevel();
+        });
+
+        on(ui.nextLevelBtn, "click", () => {
+          ui.levelCompleteModal.style.display = "none";
+          game.setup(currentLevel + 1);
+        });
+
+        on(ui.playAgainBtn, "click", () => {
+          ui.gameCompleteModal.style.display = "none";
+          game.restart();
+        });
+
+        on(ui.restartTimeoutBtn, "click", () => {
+          ui.timeoutModal.style.display = "none";
+          game.restart();
+        });
+
+        function eventListeners(gameInstance) {
+          var before = null;
+          on(ui.gridContainer, "click", function (e) {
+            if (isPaused) return;
+            var target = e.target;
+            if (target.tagName !== "IMG") return;
+            var item = target.parentNode.parentNode;
+            if (item.classList.contains("hidden")) return;
+
+            if (before === item) {
+              gameInstance.view.itemCancelAction(item);
+              before = null;
+              return;
+            }
+
+            gameInstance.view.itemAction(item);
+
+            if (!before) {
+              before = item;
+              return;
+            }
+
+            var beforeIndex = parseInt(before.getAttribute("data-index"));
+            var afterIndex = parseInt(item.getAttribute("data-index"));
+
+            if (!gameInstance.judge(beforeIndex, afterIndex)) {
+              gameInstance.view.itemCancelAction(before);
+              before = item;
+            } else {
+              before = null;
+            }
+          });
+
+          on(ui.helpBtn, "click", () => gameInstance.help());
+          on(ui.pauseBtn, "click", () => togglePause(gameInstance));
+        }
+
+        ui.bgMusic.volume = ui.volumeSlider.value;
+        on(ui.toggleSoundBtn, "click", toggleSound);
+        on(ui.volumeSlider, "input", () => {
+          ui.bgMusic.volume = ui.volumeSlider.value;
+        });
+
+        function toggleSound() {
+          if (ui.bgMusic.paused) {
+            ui.bgMusic
+              .play()
+              .catch((e) => console.log("Audio play failed:", e));
+            ui.toggleSoundBtn.innerHTML =
+              '<i class="fas fa-volume-up sound-icon icon-btn"></i>';
+          } else {
+            ui.bgMusic.pause();
+            ui.toggleSoundBtn.innerHTML =
+              '<i class="fas fa-volume-mute sound-icon icon-btn"></i>';
+          }
+        }
+
+        async function togglePause(gameInstance) {
+          isPaused = !isPaused;
+          if (isPaused) {
+            clearInterval(timerInterval);
+            ui.pauseBtn.innerHTML =
+              '<i class="fas fa-play pause-icon icon-btn"></i>';
+            ui.bgMusic.pause();
+            $("#countdownSound")[0].pause();
+
+            $("#pause-title")[0].innerText = `Game Dijeda`;
+            ui.pauseModal.style.display = "flex";
+            await gameInstance.getAnimalFact(levelConfigs[currentLevel].theme);
+          } else {
+            ui.pauseBtn.innerHTML =
+              '<i class="fas fa-pause pause-icon icon-btn"></i>';
+            if (ui.toggleSoundBtn.innerHTML.includes("volume-up")) {
+              ui.bgMusic
+                .play()
+                .catch((e) => console.log("Audio play failed:", e));
+            }
+            gameInstance.startTimer();
+            ui.pauseModal.style.display = "none";
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
