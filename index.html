@@ -491,6 +491,10 @@
           font-size: 1rem;
         }
       }
+
+      #time-up-modal .modal-content {
+        background: rgba(150, 0, 0, 0.8);
+      }
     </style>
   </head>
 
@@ -705,12 +709,29 @@
         src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
         loop
       ></audio>
-      <audio id="correctSound" src="spx/benar.mp3"></audio>
-      <audio id="wrongSound" src="spx/salah.mp3"></audio>
-      <audio id="winLevelSound" src="spx/winlevel1.mp3"></audio>
-      <audio id="winGameSound" src="spx/winsound.mp3"></audio>
-      <audio id="timeUpSound" src="spx/waktu habis.mp3"></audio>
-      <audio id="tenSecondsSound" src="spx/waktu 10 detik.mp3" loop></audio>
+      <audio id="correctSound" class="game-sound" src="spx/benar.mp3"></audio>
+      <audio id="wrongSound" class="game-sound" src="spx/salah.mp3"></audio>
+      <audio
+        id="winLevelSound"
+        class="game-sound"
+        src="spx/winlevel1.mp3"
+      ></audio>
+      <audio
+        id="winGameSound"
+        class="game-sound"
+        src="spx/winsound.mp3"
+      ></audio>
+      <audio
+        id="timeUpSound"
+        class="game-sound"
+        src="spx/waktu habis.mp3"
+      ></audio>
+      <audio
+        id="tenSecondsSound"
+        class="game-sound"
+        src="spx/waktu 10 detik.mp3"
+        loop
+      ></audio>
 
       <footer>@Copyright by Riyan 2025</footer>
     </div>
@@ -724,6 +745,7 @@
       var helpUsed = false;
       var timerInterval;
       var countdownSoundPlayed = false;
+      var isMuted = false; // <<< TAMBAHKAN BARIS INI
 
       const levelConfigs = {
         1: {
@@ -1319,6 +1341,7 @@
           gameSound: $("#gameSound")[0],
           toggleSoundBtn: $("#toggleSound")[0],
           volumeSlider: $("#volumeSlider")[0],
+          allSounds: document.querySelectorAll("audio"), // <<< TAMBAHKAN BARIS INI
         };
 
         // Background Options
@@ -1446,7 +1469,15 @@
         });
         on(ui.resumeGameBtn, "click", () => togglePause(game));
         on(ui.playAgainTimeUpBtn, "click", () => {
-          location.reload();
+          ui.timeUpModal.style.display = "none";
+          game.restartCurrentLevel(); // <--- UBAH MENJADI INI
+        });
+
+        on(ui.shareTimeUpBtn, "click", () => {
+          handleShare(
+            "Waktu Habis!",
+            `Permainanku berakhir dengan Poin ${score}. Ayo coba lagi!`
+          );
         });
         on(ui.replayLevelBtn, "click", () => {
           ui.levelCompleteModal.style.display = "none";
@@ -1515,20 +1546,44 @@
         ui.gameSound.volume = ui.volumeSlider.value;
         on(ui.toggleSoundBtn, "click", toggleSound);
         on(ui.volumeSlider, "input", () => {
-          ui.gameSound.volume = ui.volumeSlider.value;
+          const newVolume = ui.volumeSlider.value;
+          // Terapkan volume ke semua elemen audio
+          ui.allSounds.forEach((sound) => {
+            sound.volume = newVolume;
+          });
+
+          // Jika volume > 0 dan sedang di-mute, maka unmute
+          if (newVolume > 0 && isMuted) {
+            toggleSound();
+          }
+          // Jika volume diatur ke 0 dan tidak sedang di-mute, maka mute
+          else if (newVolume == 0 && !isMuted) {
+            toggleSound();
+          }
         });
 
         function toggleSound() {
-          if (ui.gameSound.paused) {
-            ui.gameSound
-              .play()
-              .catch((e) => console.log("Audio play failed:", e));
-            ui.toggleSoundBtn.innerHTML =
-              '<i class="fas fa-volume-up sound-icon icon-btn"></i>';
-          } else {
-            ui.gameSound.pause();
+          isMuted = !isMuted; // Balikkan status mute
+
+          // Terapkan status .muted ke semua elemen audio
+          ui.allSounds.forEach((sound) => {
+            sound.muted = isMuted;
+          });
+
+          // Tangani ikon dan musik latar secara khusus
+          if (isMuted) {
+            ui.gameSound.pause(); // Selalu jeda musik latar saat mute
             ui.toggleSoundBtn.innerHTML =
               '<i class="fas fa-volume-mute sound-icon icon-btn"></i>';
+          } else {
+            // Jika game berjalan dan tidak dijeda, putar kembali musiknya
+            if (ui.gameContainer.style.display === "flex" && !isPaused) {
+              ui.gameSound
+                .play()
+                .catch((e) => console.log("Audio play failed:", e));
+            }
+            ui.toggleSoundBtn.innerHTML =
+              '<i class="fas fa-volume-up sound-icon icon-btn"></i>';
           }
         }
 
