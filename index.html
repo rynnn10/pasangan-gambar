@@ -639,6 +639,25 @@
         </div>
       </div>
 
+      <div id="super-move-modal" class="modal overlay-screen">
+        <div class="modal-content">
+          <h2>Tidak Ada Langkah!</h2>
+          <p>
+            Semua langkah biasa sudah habis. Aktifkan
+            <strong>Jurus Spesial</strong> untuk menghubungkan satu pasangan
+            sulit (dengan 3 belokan)?
+          </p>
+          <div class="modal-buttons">
+            <button id="activate-super-move-no" class="btn btn-confirm-no">
+              Tidak, Acak Papan
+            </button>
+            <button id="activate-super-move-yes" class="btn btn-confirm-yes">
+              Ya, Aktifkan Jurus
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- KETERANGAN: Elemen ini digunakan untuk membuat gambar yang akan dibagikan -->
       <div
         id="screenshot-container"
@@ -746,6 +765,7 @@
       var timerInterval;
       var countdownSoundPlayed = false;
       var isMuted = false; // <<< TAMBAHKAN BARIS INI
+      var isSuperMoveActive = false; // <<< TAMBAHKAN BARIS INI
 
       const levelConfigs = {
         1: {
@@ -1148,6 +1168,28 @@
             }
             return { success: success, pos: pos };
           },
+          // --- LETAKKAN SETELAH FUNGSI twiceCorner ---
+          thriceCorner: function (before, after) {
+            var success = false,
+              pos = [],
+              arounds = this.getAround();
+            call: for (var i = 0; i < arounds.length; i++) {
+              var j = before;
+              while ((j = this.getNext(j, arounds[i])) !== -1) {
+                if (!this.isEmpty(this.getItem(j))) break;
+                // Coba cari koneksi dengan 2 belokan dari titik perantara (j)
+                var _status = this.twiceCorner(j, after); // Perbedaannya ada di sini
+                if (_status.success) {
+                  success = true;
+                  var _pos = this.connectable(before, j).pos;
+                  _pos.push(j);
+                  pos = _pos.concat(_status.pos);
+                  break call;
+                }
+              }
+            }
+            return { success: success, pos: pos };
+          },
           getNext: function (index, direction) {
             var pos = this.indexToPos(index);
             if (
@@ -1159,25 +1201,43 @@
             if (this.isOutside(nextIndex)) return -1;
             return nextIndex;
           },
+          // GANTI FUNGSI isConnectable LAMA DENGAN INI
           isConnectable: function (before, after) {
             if (isPaused) return false;
             var status = {};
             if (before === after || !this.isSame(before, after)) return false;
+
             var calleds = [
               this.directlyConnectable,
               this.onceCorner,
               this.twiceCorner,
             ];
+
+            // Jika Jurus Spesial aktif, tambahkan logika 3 belokan ke dalam pengecekan
+            if (isSuperMoveActive) {
+              calleds.push(this.thriceCorner);
+            }
+
             for (var i = 0; i < calleds.length; i++) {
               status = calleds[i].bind(this)(before, after);
               if (status.success) break;
             }
             return status;
           },
+
+          // GANTI FUNGSI judge LAMA DENGAN INI
           judge: function (before, after) {
             var _this = this;
             var status = this.isConnectable(before, after);
             if (status && status.success) {
+              // Nonaktifkan kembali Jurus Spesial setelah berhasil digunakan
+              if (isSuperMoveActive) {
+                isSuperMoveActive = false;
+                console.log("Jurus Spesial digunakan!");
+                // Di sini Anda bisa menambahkan logika lain,
+                // misalnya mengurangi skor sebagai biaya penggunaan jurus.
+              }
+
               status.pos.unshift(before);
               status.pos.push(after);
               this.view.showLine(status.pos, () =>
@@ -1223,6 +1283,7 @@
             if (itemCount === 0) this.winning();
             else this.checkDeadlock();
           },
+          // --- GANTI FUNGSI LAMA DENGAN INI ---
           checkDeadlock: function () {
             hlepData = [];
             var cell = reduceDimension(data.cell);
@@ -1235,20 +1296,23 @@
                     this.isConnectable(result[j].index, result[k].index).success
                   ) {
                     hlepData = [result[j].index, result[k].index];
-                    return;
+                    return; // Ditemukan langkah, keluar dari fungsi
                   }
                 }
               }
             }
-            this.randomReset();
+            // Jika loop selesai dan hlepData masih kosong, berarti deadlock
+            // Tampilkan modal Jurus Spesial, JANGAN panggil randomReset
+            ui.superMoveModal.style.display = "flex";
           },
+
+          // --- UBAH JUGA FUNGSI INI ---
           randomReset: function () {
-            alert(
-              "Tidak ada lagi langkah yang memungkinkan. Papan permainan akan diacak ulang!"
-            );
+            // Fungsi ini sekarang hanya berisi logika untuk mengacak ulang,
+            // tanpa alert atau notifikasi.
             this.fillCell();
             this.view.init(this, data);
-            this.checkDeadlock();
+            this.checkDeadlock(); // Cek lagi setelah diacak
           },
           getAnimalFact: async function (theme) {
             const factTextElement = $("#fact-text")[0];
@@ -1342,6 +1406,10 @@
           toggleSoundBtn: $("#toggleSound")[0],
           volumeSlider: $("#volumeSlider")[0],
           allSounds: document.querySelectorAll("audio"), // <<< TAMBAHKAN BARIS INI
+          reshuffleNoticeModal: $("#reshuffle-notice-modal")[0],
+          superMoveModal: $("#super-move-modal")[0], // <<< TAMBAHKAN
+          activateSuperMoveYesBtn: $("#activate-super-move-yes")[0], // <<< TAMBAHKAN
+          activateSuperMoveNoBtn: $("#activate-super-move-no")[0], // <<< TAMBAHKAN
         };
 
         // Background Options
@@ -1430,6 +1498,23 @@
 
         on(ui.changeBgBtn, "click", () => {
           ui.bgSelectorModal.style.display = "flex";
+        });
+
+        // --- TAMBAHKAN EVENT LISTENER INI ---
+        on(ui.activateSuperMoveYesBtn, "click", () => {
+          ui.superMoveModal.style.display = "none";
+          isSuperMoveActive = true;
+          alert(
+            "Jurus Spesial Aktif! Pilih satu pasangan sulit untuk dihubungkan."
+          );
+          // Opsional: berikan efek visual bahwa jurus aktif,
+          // misalnya membuat tombol Bintang menyala.
+        });
+
+        on(ui.activateSuperMoveNoBtn, "click", () => {
+          ui.superMoveModal.style.display = "none";
+          // Jika pemain menolak, panggil fungsi acak ulang papan.
+          game.randomReset();
         });
 
         on(ui.startBtn, "click", function () {
