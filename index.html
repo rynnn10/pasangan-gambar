@@ -1014,12 +1014,13 @@
               // 1. Bantuan gagal, maka kembalikan poin yang tadi dipotong.
               score += 2;
               this.view.updateScore();
+              this.ui.confirmHelpModal.style.display = "none";
 
               // 2. Alih-alih menampilkan alert, tampilkan modal "Jurus Spesial".
               // Tutup dulu modal konfirmasi bantuan jika masih terbuka.
               $("#confirm-help-modal")[0].style.display = "none";
               // Tampilkan modal jurus spesial
-              ui.superMoveModal.style.display = "flex";
+              this.ui.superMoveModal.style.display = "flex";
             }
           },
           startTimer: function () {
@@ -1314,7 +1315,7 @@
             }
             // Jika loop selesai dan hlepData masih kosong, berarti deadlock
             // Tampilkan modal Jurus Spesial, JANGAN panggil randomReset
-            ui.superMoveModal.style.display = "flex";
+            this.ui.superMoveModal.style.display = "flex";
           },
 
           // --- UBAH JUGA FUNGSI INI ---
@@ -1422,6 +1423,7 @@
           activateSuperMoveYesBtn: $("#activate-super-move-yes")[0], // <<< TAMBAHKAN
           activateSuperMoveNoBtn: $("#activate-super-move-no")[0], // <<< TAMBAHKAN
         };
+        game.ui = ui; // <<< TAMBAHKAN BARIS INI
 
         // Background Options
         const backgrounds = [
