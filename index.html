@@ -1001,14 +1001,25 @@
           },
           executeHelp: function () {
             helpUsed = true;
+            // Kurangi poin untuk mencoba menggunakan bantuan
             score -= 2;
             this.view.updateScore();
+
             if (hlepData.length >= 2) {
+              // JIKA PASANGAN DITEMUKAN:
+              // Poin tetap terpotong, dan bantuan akan menunjukkan pasangan.
               this.judge.apply(this, hlepData);
             } else {
+              // JIKA TIDAK ADA PASANGAN (DEADLOCK):
+              // 1. Bantuan gagal, maka kembalikan poin yang tadi dipotong.
               score += 2;
               this.view.updateScore();
-              alert("Tidak ada pasangan yang bisa dihubungkan saat ini!");
+
+              // 2. Alih-alih menampilkan alert, tampilkan modal "Jurus Spesial".
+              // Tutup dulu modal konfirmasi bantuan jika masih terbuka.
+              $("#confirm-help-modal")[0].style.display = "none";
+              // Tampilkan modal jurus spesial
+              ui.superMoveModal.style.display = "flex";
             }
           },
           startTimer: function () {
