@@ -107,6 +107,7 @@
         display: flex;
       }
 
+      /* Kode Baru */
       .start-screen-content,
       .modal-content {
         background: rgba(25, 25, 25, 0.8);
@@ -118,6 +119,8 @@
         max-width: 90%;
         width: 100%;
         box-sizing: border-box;
+        max-height: 80vh; /* TAMBAHKAN: Batasi tinggi maksimal 80% dari layar */
+        overflow-y: auto; /* TAMBAHKAN: Tampilkan scrollbar jika konten lebih tinggi */
       }
 
       .start-screen-content h1 {
@@ -515,15 +518,51 @@
         <div class="modal-content">
           <span class="close-btn" data-modal="info-modal">&times;</span>
           <h2>Informasi Game</h2>
+
           <p>
             Hubungkan dua gambar hewan yang sama untuk menghilangkannya. Garis
-            penghubung tidak boleh berbelok lebih dari dua kali. Selesaikan
-            semua pasangan sebelum waktu habis!
+            penghubung tidak boleh berbelok lebih dari dua kali. Dan kamu akan
+            mendapat +5 poin.
+            <strong
+              >Setiap kesalahan menghubungkan akan mengurangi 2 poin.</strong
+            >
           </p>
-          <p>
-            Gunakan tombol bintang (<i class="fas fa-star help-icon"></i>) untuk
-            bantuan otomatis (akan mengurangi 2 poin).
+
+          <p style="margin-top: 15px">
+            Game ini memiliki 3 level dengan tema berbeda:
+            <strong>Level 1 (Hewan Darat)</strong>,
+            <strong>Level 2 (Hewan Laut)</strong>, dan
+            <strong>Level 3 (Hewan Udara)</strong>.
           </p>
+
+          <div
+            style="
+              text-align: left;
+              max-width: 300px;
+              margin: 20px auto 0 auto;
+              padding-left: 10px;
+            "
+          >
+            <p><strong>Fitur Bantuan:</strong></p>
+            <ul
+              style="
+                list-style-position: inside;
+                padding-left: 5px;
+                margin-top: 5px;
+              "
+            >
+              <li>
+                <strong
+                  >Bintang (<i class="fas fa-star help-icon"></i>):</strong
+                >
+                Menunjukkan pasangan (biaya 2 poin).
+              </li>
+              <li style="margin-top: 5px">
+                <strong>Jurus Spesial:</strong> Muncul saat buntu untuk
+                menghubungkan pasangan sulit (biaya 3 poin).
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
 
@@ -655,6 +694,16 @@
               Ya, Aktifkan Jurus
             </button>
           </div>
+        </div>
+      </div>
+
+      <div id="super-move-active-notice" class="modal overlay-screen">
+        <div
+          class="modal-content"
+          style="border-color: #9c27b0; box-shadow: 0 0 15px #9c27b0"
+        >
+          <h2 style="color: #9c27b0">Jurus Spesial Aktif!</h2>
+          <p>Pilih satu pasangan gambar yang sulit untuk dihubungkan.</p>
         </div>
       </div>
 
@@ -1226,8 +1275,17 @@
             ];
 
             // Jika Jurus Spesial aktif, tambahkan logika 3 belokan ke dalam pengecekan
+            // Kode Baru di dalam fungsi judge
             if (isSuperMoveActive) {
-              calleds.push(this.thriceCorner);
+              isSuperMoveActive = false;
+              console.log("Jurus Spesial digunakan! Poin dikurangi 3.");
+
+              // Kurangi skor sebanyak 3 poin
+              score -= 3;
+              // Pastikan skor tidak menjadi minus
+              if (score < 0) score = 0;
+              // Perbarui tampilan skor
+              this.view.updateScore();
             }
 
             for (var i = 0; i < calleds.length; i++) {
@@ -1422,6 +1480,7 @@
           superMoveModal: $("#super-move-modal")[0], // <<< TAMBAHKAN
           activateSuperMoveYesBtn: $("#activate-super-move-yes")[0], // <<< TAMBAHKAN
           activateSuperMoveNoBtn: $("#activate-super-move-no")[0], // <<< TAMBAHKAN
+          superMoveActiveNotice: $("#super-move-active-notice")[0], // <<< TAMBAHKAN BARIS INI
         };
         game.ui = ui; // <<< TAMBAHKAN BARIS INI
 
@@ -1515,13 +1574,18 @@
 
         // --- TAMBAHKAN EVENT LISTENER INI ---
         on(ui.activateSuperMoveYesBtn, "click", () => {
+          // Sembunyikan modal pilihan
           ui.superMoveModal.style.display = "none";
+          // Aktifkan status jurus spesial
           isSuperMoveActive = true;
-          alert(
-            "Jurus Spesial Aktif! Pilih satu pasangan sulit untuk dihubungkan."
-          );
-          // Opsional: berikan efek visual bahwa jurus aktif,
-          // misalnya membuat tombol Bintang menyala.
+
+          // Tampilkan notifikasi bahwa jurus aktif
+          ui.superMoveActiveNotice.style.display = "flex";
+
+          // Sembunyikan notifikasi secara otomatis setelah 2.5 detik
+          setTimeout(() => {
+            ui.superMoveActiveNotice.style.display = "none";
+          }, 2500);
         });
 
         on(ui.activateSuperMoveNoBtn, "click", () => {
@@ -1629,11 +1693,20 @@
             }
             var beforeIndex = parseInt(before.getAttribute("data-index"));
             var afterIndex = parseInt(item.getAttribute("data-index"));
+            // Kode Baru
             if (!gameInstance.judge(beforeIndex, afterIndex)) {
+              // Mainkan suara salah
               playSound("wrongSound");
+
+              // Kurangi 2 poin untuk kesalahan
+              score = Math.max(0, score - 2); // Math.max untuk memastikan skor tidak minus
+              gameInstance.view.updateScore(); // Perbarui tampilan skor
+
+              // Batalkan pilihan sebelumnya dan jadikan item ini pilihan baru
               gameInstance.view.itemCancelAction(before);
               before = item;
             } else {
+              // Jika berhasil, reset pilihan
               before = null;
             }
           });
